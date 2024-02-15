@@ -19,26 +19,24 @@ public class SesEmailSender implements EmailSenderGateway {
     @Override
     public void sendEmail(String to, String subject, String body) {
         SendEmailRequest request = new SendEmailRequest();
+        request = request
+                .withSource("littlesekii@gmail.com")
+                .withDestination(new Destination()
+                        .withToAddresses(to)
+                )
+                .withMessage(new Message()
+                        .withSubject(new Content(subject))
+                        .withBody(new Body()
+                                .withText(new Content(body))
+                        )
+                );
 
-        for (int i = 1; i <= 50; i++) {
-            request = request
-                    .withSource("littlesekii@gmail.com")
-                    .withDestination(new Destination()
-                            .withToAddresses(to)
-                    )
-                    .withMessage(new Message()
-                            .withSubject(new Content(subject))
-                            .withBody(new Body()
-                                    .withText(new Content(body + i))
-                            )
-                    );
+        try {
 
-            try {
-
-                this.amazonSimpleEmailService.sendEmail(request);
-            } catch (AmazonServiceException exception) {
-                throw new EmailServiceException("Failure while sending email.", exception);
-            }
+            this.amazonSimpleEmailService.sendEmail(request);
+        } catch (AmazonServiceException exception) {
+            throw new EmailServiceException("Failure while sending email.", exception);
         }
+
     }
 }
